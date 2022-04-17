@@ -32,8 +32,8 @@ let nearbySearch = ({lat, lng}) => {
     .catch((err) => console.log(err));
 }
 
-let getDirections = (destination) => {
-  let api_url = `https://maps.googleapis.com/maps/api/directions/json?origin=75+Laval+Street+Vaughan+ON&destination=place_id:ChIJcYaItIAvK4gRnEVI3FoNw90&key=${key.ley}`;
+let getDirections = (origin, destination) => {
+  let api_url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.lat}%2C${origin.lng}&destination=place_id:${destination}&mode=walking&key=${key.key}`;
   var config = {
     method: 'get',
     url: api_url,
@@ -45,4 +45,4 @@ let getDirections = (destination) => {
     .catch((err) => console.log(err));
 }
 
-module.exports = {addressToLatLong, nearbySearch}
+module.exports = {addressToLatLong, nearbySearch, getDirections}

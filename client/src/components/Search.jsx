@@ -15,15 +15,17 @@ class Search extends React.Component {
     })
   }
 
-  search() {
+  search(event) {
     // send request to server to search Google Maps API
-    this.props.search(this.state.address);
+    if (event.key === 'Enter' || !event.key) {
+      this.props.search(this.state.address);
+    }
   }
 
   render () {
     return (
       <div>
-        Enter a Search Address: <input type="text" onChange={this.setAddress.bind(this)} />
+        Enter a Search Address: <input type="text" onChange={this.setAddress.bind(this)} onKeyPress={this.search.bind(this)}/>
         <button type="submit" onClick={this.search.bind(this)}>Search</button>
       </div>
     )

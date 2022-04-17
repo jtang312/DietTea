@@ -28,10 +28,21 @@ app.post('/bbt', (req, res) => {
     })
 })
 
-app.get('/calc:origin:dest', (req, res) => {
-  console.log(req.params)
+app.get('/calc/:origin/:dest', (req, res) => {
+  maps.addressToLatLong(req.params.origin)
+    .then((originCoords) => {
+      return maps.getDirections(originCoords, req.params.dest)
+    })
+    .then(directions => {
+      let trip = {
+        distance: directions.routes[0].legs[0].distance.value / 1000,
+        duration: Math.round(directions.routes[0].legs[0].duration.value / 60)
+      };
+      res.send(trip);
+    })
 })
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+

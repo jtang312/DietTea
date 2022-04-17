@@ -9,6 +9,8 @@ class App extends React.Component {
     super(props);
     this.state = {
       curAddress: '',
+      distance: null,
+      duration: null,
       stores: []
     }
   }
@@ -29,10 +31,12 @@ class App extends React.Component {
   }
 
   getDirections(destination) {
-    console.log(lat, lng)
     axios.get(`/calc/${this.state.curAddress}/${destination}`)
-    .then((directions) => {
-      console.log(directions);
+    .then((trip) => {
+      this.setState({
+        distance: trip.data.distance,
+        duration: trip.data.duration
+      })
     })
   }
 
@@ -44,7 +48,8 @@ class App extends React.Component {
     return (
       <div>
         <h2>BBT Stores Nearby</h2>
-        <div>Current Address: {this.state.curAddress} </div>
+        <div>Current Address: {this.state.curAddress}</div>
+        <div>Distance: {this.state.distance} km | Duration: {this.state.duration} mins </div>
         <Search search={this.search.bind(this)}/>
         <Stores stores={this.state.stores} getDirections={this.getDirections.bind(this)}/>
       </div>
