@@ -1,4 +1,5 @@
 var maps = require('../maps/maps');
+var db = require('../database/index');
 
 const express = require('express')
 const app = express()
@@ -40,6 +41,29 @@ app.get('/calc/:origin/:dest', (req, res) => {
       };
       res.send(trip);
     })
+    .catch(err => console.log(err));
+})
+
+app.post('/favorite', (req, res) => {
+  maps.placeIdToAddress(req.body.placeID)
+    .then((addressData) => {
+      let entry = {
+        name: addressData.name,
+        placeID: req.body.placeID,
+        address: addressData.formatted_address,
+        website: addressData.website
+      }
+      db.save(entry)
+        .then((status) => db.read())
+        .then(favorites => res.send(favorites))
+        .catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
+})
+
+app.get('/favorites', (req, res) => {
+  db.read()
+    .then(favorites => res.send(favorites));
 })
 
 app.listen(port, () => {

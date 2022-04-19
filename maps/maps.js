@@ -45,4 +45,17 @@ let getDirections = (origin, destination) => {
     .catch((err) => console.log(err));
 }
 
-module.exports = {addressToLatLong, nearbySearch, getDirections}
+let placeIdToAddress = (placeID) => {
+  let api_url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeID}&key=${key.key}`;
+  var config = {
+    method: 'get',
+    url: api_url,
+    headers: { }
+  };
+
+  return axios(config)
+    .then(response => response.data.result)
+    .catch(err => console.log(err));
+}
+
+module.exports = {addressToLatLong, nearbySearch, getDirections, placeIdToAddress}

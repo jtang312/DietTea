@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server/index",
-    "build": "webpack --mode development --watch"
+    "build": "webpack --mode development --watch",
+    "mongo-start": "brew services start mongodb-community@5.0",
+    "mongo-stop": "brew services stop mongodb-community@5.0"
   },
   "repository": {
     "type": "git",
@@ -21,6 +23,7 @@
   "dependencies": {
     "axios": "^0.26.1",
     "express": "^4.17.3",
+    "mongoose": "^6.3.0",
     "nodemon": "^2.0.15",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
