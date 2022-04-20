@@ -4,13 +4,14 @@ import Search from './Search.jsx';
 import Stores from './Stores.jsx';
 import Favorites from './Favorites.jsx';
 var axios = require('axios');
-// var db = require('../../../database/index');
+// var maps = require('../../../maps/maps');
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       curAddress: '75 Laval Street Vaughan',
+      destination: null,
       distance: null,
       duration: null,
       stores: [],
@@ -19,13 +20,16 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    console.log('mounted');
     axios.get('/favorites')
       .then(favorites => {
         this.setState({
           favorites: favorites.data
         })
       })
+  }
+
+  componentDidUpdate() {
+    window.initMap();
   }
 
   search(address) {
@@ -48,7 +52,8 @@ class App extends React.Component {
     .then((trip) =>
       this.setState({
         distance: trip.data.distance,
-        duration: trip.data.duration
+        duration: trip.data.duration,
+        destination: trip.data.destination
       })
     )
     .then(() => {
@@ -56,6 +61,11 @@ class App extends React.Component {
     })
     .then(favorites => {
       this.setState({favorites: favorites.data});
+      return new window.google.maps.Geocoder().geocode({placeId: destPlaceID}); // converts placeID to coordinates
+    })
+    .then(({results})=> {
+      console.log(results[0]);
+      window.markDest(results[0]);
     })
   }
 
@@ -63,9 +73,12 @@ class App extends React.Component {
     return (
       <div>
         <h2>BBT Stores Nearby</h2>
-        <div>Current Address: {this.state.curAddress}</div>
+        <div id="curAddress" value={this.state.curAddress}>Current Address: {this.state.curAddress} | Destination: {this.state.destination}</div>
         <div>Distance: {this.state.distance} km | Duration: {this.state.duration} mins
         | Calories Burned: {Math.round(this.state.distance * 62.5)}</div>
+        <div>
+        <div id="map"></div>
+        </div>
         <Search search={this.search.bind(this)}/>
         <Stores stores={this.state.stores} getDirections={this.getDirections.bind(this)}/>
         <Favorites favs={this.state.favorites} getDirections={this.getDirections.bind(this)}/>

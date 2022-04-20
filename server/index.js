@@ -2,10 +2,12 @@ var maps = require('../maps/maps');
 var db = require('../database/index');
 
 const express = require('express')
+const cors = require('cors');
 const app = express()
 const port = 3030
 
 // middleware
+app.use(cors());
 app.use(express.static(__dirname + '/../client/dist'));
 app.use(express.json());
 
@@ -37,13 +39,15 @@ app.get('/calc/:origin/:dest', (req, res) => {
     .then(directions => {
       let trip = {
         distance: directions.routes[0].legs[0].distance.value / 1000,
-        duration: Math.round(directions.routes[0].legs[0].duration.value / 60)
+        duration: Math.round(directions.routes[0].legs[0].duration.value / 60),
+        destination: directions.routes[0].legs[0].end_address.split(',').slice(0, 2).join(',')
       };
       res.send(trip);
     })
     .catch(err => console.log(err));
 })
 
+// saves bbt store to db and returns updated list of favorites
 app.post('/favorite', (req, res) => {
   maps.placeIdToAddress(req.body.placeID)
     .then((addressData) => {

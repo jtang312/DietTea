@@ -19,7 +19,7 @@ let addressToLatLong = (address) => {
   });
 }
 
-let nearbySearch = ({lat, lng}) => {
+let nearbySearch = ({lat = null, lng = null}) => {
   let api_url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=bubble+tea&location=${lat}%2C${lng}&type=cafe&key=${key.key}&rankby=distance`;
   var config = {
     method: 'get',
