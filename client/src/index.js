@@ -21,10 +21,9 @@ document.head.appendChild(script);
 var map
 window.initMap = function() {
   // JS API is loaded and available
-  // { lat: 43.653226, lng: -79.3831843 } - Toronto
-
   // need to call to web service to get coords from address
-  mapsAPI.addressToLatLong(document.getElementById("curAddress").getAttribute("value"))
+  let curAddress = document.getElementById("curAddress").getAttribute("value");
+  mapsAPI.addressToLatLong(curAddress)
     .then((homeCoords) => {
       map = new google.maps.Map(document.getElementById("map"), {
         center: homeCoords,
@@ -38,7 +37,7 @@ window.initMap = function() {
       });
 
       const infoWindow = new google.maps.InfoWindow();
-      infoWindow.setContent(document.getElementById("curAddress").getAttribute("value"));
+      infoWindow.setContent(`<div style="font-weight:bold;">Start: <div style="font-weight:normal;">- ${curAddress}</div></div>`);
       infoWindow.open(map, marker);
 
       marker.addListener("click", () => {
@@ -47,32 +46,66 @@ window.initMap = function() {
     })
 };
 
-window.markDest = (location) => {
+window.markDest = (store, markStores) => {
   // NOTE: needed to load in places library through script tag to be able to get details of a placeId
-  let shortenedAddress = location.formatted_address.split(',').slice(0, 2).join(',');
-  let service = new google.maps.places.PlacesService(map);
-  service.getDetails({placeId: location.place_id}, (place, status) => {
+  var service = new google.maps.places.PlacesService(map);
+  // for rendering directions:
+  var directionsService = new google.maps.DirectionsService();
+  var directionsRenderer = new google.maps.DirectionsRenderer();
+  directionsRenderer.setMap(map);
+
+  service.getDetails({placeId: store.place_id}, (place, status) => {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
+      let shortenedAddress = place.formatted_address.split(',').slice(0, 2).join(',');
+
+      // setting markers and info window
       const marker = new window.google.maps.Marker({
         map,
         place: {
-          placeId: location.place_id,
-          location: location.geometry.location
+          placeId: place.place_id,
+          location: place.geometry.location
+        },
+        icon: {
+          url: place.icon,
+          scaledSize: new google.maps.Size(15, 15), // scaled size
+          origin: new google.maps.Point(0,0), // origin
+          anchor: new google.maps.Point(0, 0) // anchor
         }
       });
-
-      const infoWindow = new google.maps.InfoWindow();
-      infoWindow.setContent(`<div style="font-weight:bold;">${place.name}<div style="font-weight:normal;">- ${shortenedAddress}</div></div>`);
-      infoWindow.open(map, marker);
-
-      marker.addListener("click", () => {
+      if (markStores === undefined) {
+        const infoWindow = new google.maps.InfoWindow();
+        infoWindow.setContent(`<div style="font-weight:bold;">${place.name}<div style="font-weight:normal;">- ${shortenedAddress}</div></div>`);
         infoWindow.open(map, marker);
-      });
+
+        marker.addListener("click", () => {
+          infoWindow.open(map, marker);
+        });
+      } else {
+        const infoWindow = new google.maps.InfoWindow();
+        infoWindow.setContent(`<div style="font-weight:bold;">${markStores}. ${place.name}</div>`);
+
+        marker.addListener("click", () => {
+          infoWindow.open(map, marker);
+        });
+      }
+
+      // rendering directions
+      let request = {
+        origin: {query: document.getElementById("curAddress").getAttribute("value")},
+        destination: place.formatted_address,
+        travelMode: google.maps.TravelMode.WALKING
+      }
+      directionsService.route(request)
+        .then((result) => {
+          console.log('hi');
+          directionsRenderer.setDirections(result);
+        })
     }
   });
+}
 
-
-
-
-
+window.markStores = (stores) => {
+  stores.forEach((store, i) => {
+    window.markDest(store, i + 1)
+  })
 }

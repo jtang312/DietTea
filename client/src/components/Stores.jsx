@@ -2,7 +2,7 @@ import React from 'react';
 
 var Stores = (props) => (
   <div>
-    <ul>
+    <ol>
       {props.stores.map(store => {
         return (
           <li key={store.place_id}>
@@ -10,7 +10,7 @@ var Stores = (props) => (
           </li>
         )
       })}
-    </ul>
+    </ol>
   </div>
 )
 
