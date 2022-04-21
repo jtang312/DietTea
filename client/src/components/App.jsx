@@ -55,22 +55,23 @@ class App extends React.Component {
 
   getDirections(destPlaceID) {
     axios.get(`/calc/${this.state.curAddress}/${destPlaceID}`)
-    .then((trip) =>
+    .then((trip) => {
       this.setState({
         distance: trip.data.distance,
         duration: trip.data.duration,
         destination: trip.data.destination
       })
-    )
-    .then(() => {
-      return axios.post('/favorite', {placeID: destPlaceID})
-    })
-    .then(favorites => {
-      this.setState({favorites: favorites.data});
       return new window.google.maps.Geocoder().geocode({placeId: destPlaceID}); // converts placeID to coordinates
     })
     .then(({results})=> {
       window.markDest(results[0]);
+    })
+  }
+
+  addToFavorites(destPlaceID) {
+    axios.post('/favorite', {placeID: destPlaceID})
+    .then(favorites => {
+      this.setState({favorites: favorites.data});
     })
   }
 
@@ -83,7 +84,7 @@ class App extends React.Component {
           <div id="map"></div>
           <div>
             <Search search={this.search.bind(this)}/>
-            <Stores stores={this.state.stores} getDirections={this.getDirections.bind(this)}/>
+            <Stores stores={this.state.stores} getDirections={this.getDirections.bind(this)} addToFavorites={this.addToFavorites.bind(this)}/>
             <Favorites favs={this.state.favorites} getDirections={this.getDirections.bind(this)}/>
           </div>
         </div>

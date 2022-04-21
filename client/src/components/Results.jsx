@@ -1,7 +1,6 @@
 import React from 'react';
 
 let Results = (props) => {
-  console.log(props.values);
   return (<div id="results">
     <div>
       <span id="curAddress" value={props.values.curAddress}>Current Address: {props.values.curAddress} | </span>
@@ -9,7 +8,7 @@ let Results = (props) => {
     </div>
     <div>
       <span>Distance: {props.values.distance} km | </span>
-      <span>Duration: {props.values.duration/60} hrs {props.values.duration%60} mins | </span>
+      <span>Duration: {Math.floor(props.values.duration/60)} hrs {Math.round(props.values.duration%60)} mins | </span>
       <span>Caloried Burned: {Math.round(props.values.distance) * 62.5} cals</span>
     </div>
   </div>)

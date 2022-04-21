@@ -97,7 +97,6 @@ window.markDest = (store, markStores) => {
       }
       directionsService.route(request)
         .then((result) => {
-          console.log('hi');
           directionsRenderer.setDirections(result);
         })
     }
