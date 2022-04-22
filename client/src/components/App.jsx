@@ -26,10 +26,8 @@ class App extends React.Component {
         const curAddress = prompt('Enter start address: ') || '75 Laval Street Vaughan';
         this.setState({
           favorites: favorites.data,
-          curAddress
-        }, () => {
-          this.search(curAddress);
         })
+        this.search.call(this, curAddress);
       })
   }
 
@@ -50,6 +48,7 @@ class App extends React.Component {
         })
         window.markStores(stores.data);
       })
+      .catch(err => console.log(err));
     })
   }
 

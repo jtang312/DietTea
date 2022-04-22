@@ -72,33 +72,29 @@ window.markDest = (store, markStores) => {
           anchor: new google.maps.Point(0, 0) // anchor
         }
       });
+      const infoWindow = new google.maps.InfoWindow();
       if (markStores === undefined) {
-        const infoWindow = new google.maps.InfoWindow();
         infoWindow.setContent(`<div style="font-weight:bold;">${place.name}<div style="font-weight:normal;">- ${shortenedAddress}</div></div>`);
         infoWindow.open(map, marker);
-
-        marker.addListener("click", () => {
-          infoWindow.open(map, marker);
-        });
       } else {
-        const infoWindow = new google.maps.InfoWindow();
         infoWindow.setContent(`<div style="font-weight:bold;">${markStores}. ${place.name}</div>`);
-
-        marker.addListener("click", () => {
-          infoWindow.open(map, marker);
-        });
       }
+      marker.addListener("click", () => {
+        infoWindow.open(map, marker);
+      });
 
       // rendering directions
-      let request = {
-        origin: {query: document.getElementById("curAddress").getAttribute("value")},
-        destination: place.formatted_address,
-        travelMode: google.maps.TravelMode.WALKING
-      }
-      directionsService.route(request)
-        .then((result) => {
-          directionsRenderer.setDirections(result);
-        })
+      new google.maps.Geocoder().geocode({'address': document.getElementById("curAddress").getAttribute("value")}, (result, status) => {
+        let request = {
+          origin: result[0].geometry.location,
+          destination: place.geometry.location,
+          travelMode: google.maps.TravelMode.WALKING
+        }
+        directionsService.route(request)
+          .then((result) => {
+            directionsRenderer.setDirections(result);
+          })
+      })
     }
   });
 }
