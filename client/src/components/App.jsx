@@ -29,6 +29,7 @@ class App extends React.Component {
         })
         this.search.call(this, curAddress);
       })
+      .catch(err => console.log(err))
   }
 
   componentDidUpdate() {
@@ -65,6 +66,7 @@ class App extends React.Component {
     .then(({results})=> {
       window.markDest(results[0]);
     })
+    .catch(err => console.log(err))
   }
 
   addToFavorites(destPlaceID) {
@@ -72,6 +74,7 @@ class App extends React.Component {
     .then(favorites => {
       this.setState({favorites: favorites.data});
     })
+    .catch(err => console.log(err));
   }
 
   render() {

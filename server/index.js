@@ -1,17 +1,64 @@
 var maps = require('../maps/maps');
 var db = require('../database/index');
+const auth = require('./auth/auth');
 
-const express = require('express')
-const cors = require('cors');
-const app = express()
-const port = 3030
+const express = require('express');
+var cookieParser = require('cookie-parser')
+const app = express();
+const port = 3030;
 
 // middleware
-app.use(cors());
-app.use(express.static(__dirname + '/../client/dist'));
+app.set('views', `${__dirname}/views`);
+app.set('view engine', 'ejs');
+app.use(cookieParser());
+app.use(express.static(__dirname + '/../client'));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(auth.createUser);
+
+app.get('/', (req, res) => {
+  res.render('login');
+})
+
+app.get('/signup', (req, res) => {
+  res.render('signup');
+})
+
+app.post('/signup', (req, res) => {
+  db.saveUser(req.body)
+    .then(result => {
+      res.cookie('user', req.body.username);
+      res.cookie('password', req.body.password);
+      res.redirect(`/dist/index.html`);
+    })
+})
+
+app.get('/login', (req, res) => {
+  res.cookie('user', null);
+  res.cookie('password', null);
+  res.render('login');
+})
+
+app.post('/login', (req, res) => {
+  console.log('2', req.user, req.body);
+  db.findUser(req.user)
+    .then(result => {
+      if (result.length > 0) {
+        res.redirect(`/dist/index.html`);
+      } else {
+        res.redirect('/login');
+      }
+    })
+})
+
+app.get('/logout', (req, res) => {
+  res.cookie('user', '');
+  res.cookie('password', '');
+  res.redirect('/login');
+})
 
 app.post('/bbt', (req, res) => {
+  console.log(req.user)
   maps.addressToLatLong(req.body.address)
     .then((coords) => {
       return maps.nearbySearch(coords);
@@ -29,6 +76,7 @@ app.post('/bbt', (req, res) => {
       })
       res.send(pickedFields)
     })
+    .catch(err => console.log(err));
 })
 
 app.get('/calc/:origin/:dest', (req, res) => {
@@ -49,25 +97,29 @@ app.get('/calc/:origin/:dest', (req, res) => {
 
 // saves bbt store to db and returns updated list of favorites
 app.post('/favorite', (req, res) => {
+  console.log(req.user);
   maps.placeIdToAddress(req.body.placeID)
     .then((addressData) => {
       let entry = {
         name: addressData.name,
         placeID: req.body.placeID,
         address: addressData.formatted_address,
-        website: addressData.website
+        website: addressData.website,
+        user: req.user.username
       }
       db.save(entry)
-        .then((status) => db.read())
+        .then((status) => db.read(req.user.username))
         .then(favorites => res.send(favorites))
         .catch(err => console.log(err));
     })
     .catch(err => console.log(err));
 })
 
-app.get('/favorites', (req, res) => {
-  db.read()
-    .then(favorites => res.send(favorites));
+app.get('/favorites', auth.verifyUser, (req, res) => {
+  console.log('from favorites', req.user);
+  db.read(req.user.username)
+    .then(favorites => res.send(favorites))
+    .catch(err => console.log(err));
 })
 
 app.listen(port, () => {

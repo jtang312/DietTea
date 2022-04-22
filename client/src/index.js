@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import App from './components/App.jsx';
 var key = require('../../maps/config');
 var mapsAPI = require('../../maps/maps');
-// import { Loader } from "@googlemaps/js-api-loader"
 
 ReactDOM
   .createRoot(document.getElementById('app'))
@@ -44,6 +43,7 @@ window.initMap = function() {
         infoWindow.open(map, marker);
       });
     })
+    .catch(err => console.log(err));
 };
 
 window.markDest = (store, markStores) => {
@@ -94,6 +94,7 @@ window.markDest = (store, markStores) => {
           .then((result) => {
             directionsRenderer.setDirections(result);
           })
+          .catch(err => console.log(err));
       })
     }
   });
