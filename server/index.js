@@ -16,11 +16,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(auth.createUser);
 
-app.get('/', (req, res) => {
-  res.render('login');
+app.get('/', auth.verifyUser, (req, res) => {
+  res.redirect(`/dist/index.html`);
 })
 
 app.get('/signup', (req, res) => {
+  res.cookie('user', null);
+  res.cookie('password', null);
   res.render('signup');
 })
 
@@ -52,6 +54,7 @@ app.post('/login', (req, res) => {
 })
 
 app.get('/logout', (req, res) => {
+  console.log('hi from logout')
   res.cookie('user', '');
   res.cookie('password', '');
   db.deleteNull()
@@ -59,7 +62,6 @@ app.get('/logout', (req, res) => {
 })
 
 app.post('/bbt', (req, res) => {
-  console.log(req.user)
   maps.addressToLatLong(req.body.address)
     .then((coords) => {
       return maps.nearbySearch(coords);
@@ -98,7 +100,6 @@ app.get('/calc/:origin/:dest', (req, res) => {
 
 // saves bbt store to db and returns updated list of favorites
 app.post('/favorite', (req, res) => {
-  console.log(req.user);
   maps.placeIdToAddress(req.body.placeID)
     .then((addressData) => {
       let entry = {
@@ -117,8 +118,18 @@ app.post('/favorite', (req, res) => {
 })
 
 app.get('/favorites', auth.verifyUser, (req, res) => {
-  console.log('from favorites', req.user);
   db.read(req.user.username)
+    .then(favorites => res.send({favorites, user: req.user}))
+    .catch(err => console.log(err));
+})
+
+app.post('/deleteFavorite', auth.verifyUser, (req, res) => {
+  let entry = {
+    placeID: req.body.placeID,
+    user: req.user.username
+  }
+  db.deleteFavorite(entry)
+    .then((status) => db.read(req.user.username))
     .then(favorites => res.send(favorites))
     .catch(err => console.log(err));
 })

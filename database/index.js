@@ -38,6 +38,10 @@ var deleteNull = () => {
   return Favorites.deleteMany({'user': null})
 }
 
+var deleteFavorite = (entry) => {
+  return Favorites.deleteOne({'placeID': entry.placeID, 'user': entry.user})
+}
+
 var saveUser = (newUser) => {
   let user = new Users({
     username: newUser.username,
@@ -52,4 +56,4 @@ var findUser = ({username, password}) => {
   return Users.find({'username': username, 'password': password});
 }
 
-module.exports = {save, read, deleteNull, saveUser, findUser};
+module.exports = {save, read, deleteNull, deleteFavorite, saveUser, findUser};

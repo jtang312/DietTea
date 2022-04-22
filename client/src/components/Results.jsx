@@ -7,7 +7,7 @@ let Results = (props) => {
       <span>Destination: {props.values.destination} </span>
     </div>
     <div>
-      <span>Distance: {props.values.distance} km | </span>
+      <span>Distance: {props.values.distance ? props.values.distance.toFixed(1) : 0} km | </span>
       <span>Duration: {Math.floor(props.values.duration/60)} hrs {Math.round(props.values.duration%60)} mins | </span>
       <span>Caloried Burned: {Math.round(props.values.distance) * 62.5} cals</span>
     </div>

@@ -9,6 +9,7 @@ var Favorites = (props) => {
           <li key={fav._id}>
             <a href={fav.website} onClick={() => {props.getDirections(fav.placeID); return true;}} target="_blank">{fav.name}</a>
             <span> | Address: {fav.address.split(',').slice(0, 2).join(',')}</span>
+            <button onClick={() => {props.deleteFav(fav.placeID)}}><i className="fa fa-trash-o"></i></button>
           </li>
         )) : <div></div>}
       </ol>

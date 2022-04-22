@@ -16,16 +16,18 @@ class App extends React.Component {
       distance: null,
       duration: null,
       stores: [],
-      favorites: []
+      favorites: [],
+      user: null
     }
   }
 
   componentDidMount() {
     axios.get('/favorites')
-      .then(favorites => {
-        const curAddress = prompt('Enter start address: ') || '75 Laval Street Vaughan';
+      .then(response => {
+        const curAddress = 'Toronto';
         this.setState({
-          favorites: favorites.data,
+          favorites: response.data.favorites,
+          user: response.data.user.username || 'Anonymous'
         })
         this.search.call(this, curAddress);
       })
@@ -77,18 +79,32 @@ class App extends React.Component {
     .catch(err => console.log(err));
   }
 
+  deleteFav(destPlaceID) {
+    axios.post('/deleteFavorite', {placeID: destPlaceID})
+    .then(favorites => {
+      this.setState({favorites: favorites.data});
+    })
+    .catch(err => console.log(err));
+  }
+
   render() {
     return (
       <div>
         <h2>BBT Stores Nearby</h2>
-        <a href="/logout">Logout</a>
+        <form action="/login">
+            <input type="submit" value="Login" />
+        </form>
+        <form action="/logout">
+          <input type="submit" value="Logout" />
+        </form>
+        <div>User: {this.state.user}</div>
         <Results values={{curAddress: this.state.curAddress, destination: this.state.destination, distance: this.state.distance, duration: this.state.duration}}/>
         <div id="displayContainer">
           <div id="map"></div>
           <div>
             <Search search={this.search.bind(this)}/>
             <Stores stores={this.state.stores} getDirections={this.getDirections.bind(this)} addToFavorites={this.addToFavorites.bind(this)}/>
-            <Favorites favs={this.state.favorites} getDirections={this.getDirections.bind(this)}/>
+            <Favorites favs={this.state.favorites} getDirections={this.getDirections.bind(this)} deleteFav={this.deleteFav.bind(this)}/>
           </div>
         </div>
       </div>

@@ -3,11 +3,20 @@ import ReactDOM from 'react-dom/client';
 import App from './components/App.jsx';
 var key = require('../../maps/config');
 var mapsAPI = require('../../maps/maps');
+var axios = require('axios');
+
+// delete favorites by sending request to logout before tab close
+window.addEventListener('beforeunload', function (e) {
+  e.preventDefault();
+  e.returnValue = '';
+  axios.get('/logout');
+});
 
 ReactDOM
   .createRoot(document.getElementById('app'))
   .render(<App />);
 
+/* FOR INTERACTIVE MAP ON SITE */
 // Create the script tag, set the appropriate attributes
 var script = document.createElement('script');
 script.src = `https://maps.googleapis.com/maps/api/js?key=${key.key}&libraries=places&callback=initMap`;
@@ -67,7 +76,7 @@ window.markDest = (store, markStores) => {
         },
         icon: {
           url: place.icon,
-          scaledSize: new google.maps.Size(15, 15), // scaled size
+          scaledSize: new google.maps.Size(20, 20), // scaled size
           origin: new google.maps.Point(0,0), // origin
           anchor: new google.maps.Point(0, 0) // anchor
         }
