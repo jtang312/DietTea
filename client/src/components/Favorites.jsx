@@ -10,7 +10,7 @@ var Favorites = (props) => {
             <a href={fav.website} onClick={() => {props.getDirections(fav.placeID); return true;}} target="_blank">{fav.name}</a>
             <span> | Address: {fav.address.split(',').slice(0, 2).join(',')}</span>
           </li>
-        )) : <li>None</li>}
+        )) : <div></div>}
       </ol>
     </div>
   )

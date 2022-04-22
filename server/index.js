@@ -54,7 +54,8 @@ app.post('/login', (req, res) => {
 app.get('/logout', (req, res) => {
   res.cookie('user', '');
   res.cookie('password', '');
-  res.redirect('/login');
+  db.deleteNull()
+    .then((result) => res.redirect('/login'))
 })
 
 app.post('/bbt', (req, res) => {

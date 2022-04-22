@@ -81,6 +81,7 @@ class App extends React.Component {
     return (
       <div>
         <h2>BBT Stores Nearby</h2>
+        <a href="/logout">Logout</a>
         <Results values={{curAddress: this.state.curAddress, destination: this.state.destination, distance: this.state.distance, duration: this.state.duration}}/>
         <div id="displayContainer">
           <div id="map"></div>

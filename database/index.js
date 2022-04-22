@@ -6,7 +6,7 @@ const favoritesSchema = new mongoose.Schema({
   placeID: {type: String, unique: true},
   address: String,
   website: String,
-  user: String
+  user: {type: String, default: null}
 });
 
 const usersSchema = new mongoose.Schema({
@@ -34,6 +34,10 @@ var read = (username) => {
   return Favorites.find({'user': username});
 }
 
+var deleteNull = () => {
+  return Favorites.deleteMany({'user': null})
+}
+
 var saveUser = (newUser) => {
   let user = new Users({
     username: newUser.username,
@@ -48,4 +52,4 @@ var findUser = ({username, password}) => {
   return Users.find({'username': username, 'password': password});
 }
 
-module.exports = {save, read, saveUser, findUser};
+module.exports = {save, read, deleteNull, saveUser, findUser};
