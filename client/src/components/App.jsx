@@ -27,7 +27,7 @@ class App extends React.Component {
         const curAddress = 'Toronto';
         this.setState({
           favorites: response.data.favorites,
-          user: response.data.user.username || 'Anonymous'
+          user: response.data.user.username || ''
         })
         this.search.call(this, curAddress);
       })
@@ -90,15 +90,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h2>BBT Stores Nearby</h2>
-        <form action="/login">
-            <input type="submit" value="Login" />
-        </form>
-        <form action="/logout">
-          <input type="submit" value="Logout" />
-        </form>
-        <div>User: {this.state.user}</div>
-        <Results values={{curAddress: this.state.curAddress, destination: this.state.destination, distance: this.state.distance, duration: this.state.duration}}/>
+        <Results values={{curAddress: this.state.curAddress, destination: this.state.destination, distance: this.state.distance, duration: this.state.duration, user: this.state.user}}/>
         <div id="displayContainer">
           <div id="map"></div>
           <div>

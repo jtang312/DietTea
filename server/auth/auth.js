@@ -7,6 +7,7 @@ const createUser = (req, res, next) => {
   // searches user table for using info attached to cookie
   db.findUser({username, password})
     .then(result => {
+      console.log(result);
       if (result.length > 0) {
         // if cookie can identiy existing user (applies during routing throughout site)
         res.cookie('user', result[0].username);
@@ -14,7 +15,7 @@ const createUser = (req, res, next) => {
         req.user = {'username': result[0].username, 'password': result[0].password};
         console.log('found', req.user);
       } else {
-        // if user can't be found with cookie, set a cookie on user computer
+        // if user can't be found with cookie, set a cookie on user computer (to be sent on next res.send or res.redirect)
         // on login/signup routes, req.body properties can be used to set cookie for later site routing
         // gives undefined cookie and req.user for direct calls to /dist/index.html (corresponds to anonymous user)
         res.cookie('user', req.body.username);

@@ -2,7 +2,15 @@ import React from 'react';
 
 let Results = (props) => {
   return (<div id="results">
+    <h2>BBT Stores Nearby</h2>
     <div>
+      <form action="/login">
+        <input type="submit" value="Login" />
+      </form>
+      <form action="/logout">
+        <input type="submit" value="Logout" />
+      </form>
+      <div>User: {props.values.user}</div>
       <span id="curAddress" value={props.values.curAddress}>Current Address: {props.values.curAddress} | </span>
       <span>Destination: {props.values.destination} </span>
     </div>
