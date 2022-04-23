@@ -53,7 +53,6 @@ var saveUser = (newUser) => {
 }
 
 var findUser = ({username, password}) => {
-  console.log(username, password);
   return Users.find({'username': username, 'password': password});
 }
 

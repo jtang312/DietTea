@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Search from './Search.jsx';
-import Stores from './Stores.jsx';
+import {BrowserRouter, Routes, Route, Link} from 'react-router-dom'
+import Home from './Home.jsx';
+// import Stores from './Stores.jsx';
 import Favorites from './Favorites.jsx';
 import Results from './Results.jsx';
 var axios = require('axios');
@@ -48,8 +49,9 @@ class App extends React.Component {
       .then((stores) => {
         this.setState({
           stores: stores.data
+        }, () => {
+          window.markStores(this.state.stores);
         })
-        window.markStores(stores.data);
       })
       .catch(err => console.log(err));
     })
@@ -89,17 +91,25 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>
-        <Results values={{curAddress: this.state.curAddress, destination: this.state.destination, distance: this.state.distance, duration: this.state.duration, user: this.state.user}}/>
-        <div id="displayContainer">
-          <div id="map"></div>
-          <div>
-            <Search search={this.search.bind(this)}/>
-            <Stores stores={this.state.stores} getDirections={this.getDirections.bind(this)} addToFavorites={this.addToFavorites.bind(this)}/>
-            <Favorites favs={this.state.favorites} getDirections={this.getDirections.bind(this)} deleteFav={this.deleteFav.bind(this)}/>
+      <BrowserRouter>
+        <div>
+          <nav>
+            <Link to="/">Home</Link>
+            <span>   </span>
+            <Link to="/favsPage">Favorites</Link>
+          </nav>
+          <Results values={{curAddress: this.state.curAddress, destination: this.state.destination, distance: this.state.distance, duration: this.state.duration, user: this.state.user}}/>
+          <div id="displayContainer">
+            <div id="map"></div>
+            <div>
+              <Routes>
+                <Route path='/' element={<Home search={this.search.bind(this)} stores={this.state.stores} getDirections={this.getDirections.bind(this)} addToFavorites={this.addToFavorites.bind(this)}/>}></Route>
+                <Route path="/favsPage" element={<Favorites favs={this.state.favorites} getDirections={this.getDirections.bind(this)} deleteFav={this.deleteFav.bind(this)} />} />
+              </Routes>
+            </div>
           </div>
         </div>
-      </div>
+      </BrowserRouter>
     )
   }
 }

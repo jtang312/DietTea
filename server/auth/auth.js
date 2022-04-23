@@ -7,7 +7,6 @@ const createUser = (req, res, next) => {
   // searches user table for using info attached to cookie
   db.findUser({username, password})
     .then(result => {
-      console.log(result);
       if (result.length > 0) {
         // if cookie can identiy existing user (applies during routing throughout site)
         res.cookie('user', result[0].username);
@@ -27,6 +26,7 @@ const createUser = (req, res, next) => {
     })
 }
 
+// not really necessary since will at worst be anonymous user
 const verifyUser = (req, res, next) => {
   if (req.user) {
     next();

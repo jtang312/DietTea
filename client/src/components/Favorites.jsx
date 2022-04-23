@@ -2,7 +2,7 @@ import React from 'react';
 
 var Favorites = (props) => {
   return (
-    <div>
+    <section>
       <h2>Favorites</h2>
       <ol>
         {(props.favs.length > 0 && typeof props.favs === 'object') ? props.favs.map(fav => (
@@ -13,7 +13,7 @@ var Favorites = (props) => {
           </li>
         )) : <div></div>}
       </ol>
-    </div>
+    </section>
   )
 }
 

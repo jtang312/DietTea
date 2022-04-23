@@ -1,5 +1,7 @@
 var maps = require('../maps/maps');
 var db = require('../database/index');
+var path = require('path');
+const router = require('express').Router();
 const auth = require('./auth/auth');
 
 const express = require('express');
@@ -11,14 +13,10 @@ const port = 3030;
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
 app.use(cookieParser());
-app.use(express.static(__dirname + '/../client'));
+app.use(express.static(__dirname + '/../client/dist'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(auth.createUser);
-
-app.get('/', auth.verifyUser, (req, res) => {
-  res.redirect(`/dist/index.html`);
-})
 
 app.get('/signup', (req, res) => {
   res.cookie('user', null);
@@ -31,7 +29,7 @@ app.post('/signup', (req, res) => {
     .then(result => {
       res.cookie('user', req.body.username);
       res.cookie('password', req.body.password);
-      res.redirect(`/dist/index.html`);
+      res.redirect('/');
     })
 })
 
@@ -42,11 +40,10 @@ app.get('/login', (req, res) => {
 })
 
 app.post('/login', (req, res) => {
-  console.log('2', req.user, req.body);
   db.findUser(req.user)
     .then(result => {
       if (result.length > 0) {
-        res.redirect(`/dist/index.html`);
+        res.redirect('/');
       } else {
         res.redirect('/login');
       }
@@ -117,13 +114,13 @@ app.post('/favorite', (req, res) => {
     .catch(err => console.log(err));
 })
 
-app.get('/favorites', auth.verifyUser, (req, res) => {
+app.get('/favorites', (req, res) => {
   db.read(req.user.username)
     .then(favorites => res.send({favorites, user: req.user}))
     .catch(err => console.log(err));
 })
 
-app.post('/deleteFavorite', auth.verifyUser, (req, res) => {
+app.post('/deleteFavorite', (req, res) => {
   let entry = {
     placeID: req.body.placeID,
     user: req.user.username
