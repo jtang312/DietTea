@@ -10,10 +10,15 @@ DietTea is a web app to help people on a diet not feel guilty about enjoying a b
 ## Setup
 
 - Clone this repository and navigate to project directory in the terminal
-- Then, run development server:
+- Compile and bundle files:
 
 ```bash
 npm run build
+```
+
+- Start the development server
+
+```bash
 npm start
 ```
 
